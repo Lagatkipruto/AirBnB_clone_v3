@@ -18,13 +18,13 @@ class FileStorage:
     Handles long term storage of class instances
     """
     CNC = {
-        'BaseModel': base_model.BaseModel,
-        'Amenity': amenity.Amenity,
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'User': user.User
+        'BaseModel': BaseModel,
+        'Amenity': Amenity,
+        'City': City,
+        'Place': Place,
+        'Review': Review,
+        'State': State,
+        'User': User
     }
     """CNC - this variable is a dictionary with:
     keys: Class Names
@@ -78,6 +78,19 @@ class FileStorage:
         if obj is not None:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:
+                del self.__objects[key]
+
+    def delete_all(self, cls=None):
+        """delete all objects from __objects"""
+        if cls is None:
+            self.__objects = {}
+        else:
+            keys_to_delete = []
+            for key in self.__objects:
+                if cls == self.__objects[key].__class__ or \
+                cls == self.__objects[key].__class__.__name__:
+                    keys_to_delete.append(key)
+            for key in keys_to_delete:
                 del self.__objects[key]
 
     def close(self):

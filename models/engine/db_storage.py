@@ -7,8 +7,12 @@ import os
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
-from models import base_model, amenity, city, place, review, state, user
-
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 
 
 class DBStorage:
@@ -16,12 +20,12 @@ class DBStorage:
     Handles long term storage for all class instances
     """
     CNC = {
-        'Amenity': amenity.Amenity,
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'User': user.User
+        'Amenity': Amenity,
+        'City': City,
+        'Place': Place,
+        'Review': Review,
+        'State': State,
+        'User': User
     }
     """interaacts with the MySQL database"""
     __engine = None
