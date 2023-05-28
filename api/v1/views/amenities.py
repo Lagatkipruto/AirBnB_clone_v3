@@ -4,7 +4,8 @@ Flask route that returns json response
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
-from models import storage, CNC
+from models import storage
+from models.amenity import Amenity as CNC
 from flasgger.utils import swag_from
 
 
