@@ -18,6 +18,7 @@ import json
 import os
 import pep8
 import unittest
+STORAGE_TYPE = os.getenv('STORAGE_TYPE')
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
@@ -87,6 +88,7 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
+
 @unittest.skipIf(STORAGE_TYPE != 'db', 'skip if environ is not db')
 class TestCountGet(unittest.TestCase):
     """testing Count and Get methods"""
@@ -98,18 +100,18 @@ class TestCountGet(unittest.TestCase):
         print('.......... Testing DBStorage .......')
         print('. State, City, User, Place Amenity .')
         print('....................................')
-        storage.delete_all()
+        models.storage.delete_all()
         cls.s = State(name="California")
         cls.c = City(state_id=cls.s.id,
-                name="San Francisco")
+                     name="San Francisco")
         cls.u = User(email="betty@holbertonschool.com",
-                password="pwd")
+                     password="pwd")
         cls.p1 = Place(user_id=cls.u.id,
-                city_id=cls.c.id,
-                name="a house")
+                       city_id=cls.c.id,
+                       name="a house")
         cls.p2 = Place(user_id=cls.u.id,
-                city_id=cls.c.id,
-                name="a house two")
+                       city_id=cls.c.id,
+                       name="a house two")
         cls.a1 = Amenity(name="Wifi")
         cls.a2 = Amenity(name="Cable")
         cls.a3 = Amenity(name="Bucket Shower")
@@ -132,7 +134,7 @@ class TestCountGet(unittest.TestCase):
         """... checks if all(), save(), and reload function
         in new instance.  This also tests for reload"""
         actual = 0
-        db_objs = storage.all()
+        db_objs = models.storage.all()
         for obj in db_objs.values():
             for x in [self.s.id, self.c.id, self.u.id, self.p1.id]:
                 if x == obj.id:

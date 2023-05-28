@@ -18,9 +18,13 @@ import json
 import os
 import pep8
 import unittest
+from os.path import isfile
+from os import remove
+
 FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
+F = "file.json"
 
 
 class TestFileStorageDocs(unittest.TestCase):
@@ -68,6 +72,12 @@ test_file_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
+class TestUserFsInstances:
+    """Class to setup instances for testing"""
+    user = User()
+    bm_obj = BaseModel()
+
+
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
@@ -110,13 +120,19 @@ class TestFileStorage(unittest.TestCase):
         for key, value in new_dict.items():
             new_dict[key] = value.to_dict()
         string = json.dumps(new_dict)
-        with open("file.json", "r") as f:
+        with open(F, "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-    def tearDownClass():
+    @classmethod
+    def setUpClass(cls):
+        """Setup class method"""
+        cls.storage = FileStorage()
+
+    @classmethod
+    def tearDownClass(cls):
         """tidies up the tests removing storage objects"""
-        storage.delete_all()
+        cls.storage.delete_all()
         remove(F)
 
     def setUp(self):
@@ -128,23 +144,23 @@ class TestFileStorage(unittest.TestCase):
         """... checks proper FileStorage instantiation"""
         remove(F)
         self.user.save()
-        self.assertTrue(path.isfile(F))
+        self.assertTrue(isfile(F))
 
     def test_count_cls(self):
         """... checks count method with class input arg"""
-        count_user = storage.count('User')
+        count_user = self.storage.count('User')
         expected = 1
         self.assertEqual(expected, count_user)
 
     def test_count_all(self):
         """... checks the count method with no class input"""
-        count_all = storage.count()
+        count_all = self.storage.count()
         expected = 2
         self.assertEqual(expected, count_all)
 
     def test_get_cls_id(self):
         """... checks get method with class and id inputs"""
-        duplicate = storage.get('User', self.user.id)
+        duplicate = self.storage.get('User', self.user.id)
         expected = self.user.id
         actual = duplicate.id
         self.assertEqual(expected, actual)
@@ -152,7 +168,7 @@ class TestFileStorage(unittest.TestCase):
     def test_all(self):
         """... checks if all() function returns newly created instance"""
         u_id = self.user.id
-        all_obj = storage.all()
+        all_obj = self.storage.all()
         actual = False
         for k in all_obj.keys():
             if u_id in k:
@@ -188,4 +204,4 @@ class TestFileStorage(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main
+    unittest.main()
