@@ -88,7 +88,7 @@ class FileStorage:
             keys_to_delete = []
             for key in self.__objects:
                 if cls == self.__objects[key].__class__ or \
-                cls == self.__objects[key].__class__.__name__:
+                        cls == self.__objects[key].__class__.__name__:
                     keys_to_delete.append(key)
             for key in keys_to_delete:
                 del self.__objects[key]
