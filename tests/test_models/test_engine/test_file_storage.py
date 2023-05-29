@@ -19,12 +19,12 @@ import os
 import pep8
 import unittest
 from os.path import isfile
-from os import remove
+from os import environ, stat, remove, path
 
 FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
-F = "file.json"
+F = './dev/file.json'
 
 
 class TestFileStorageDocs(unittest.TestCase):
@@ -162,7 +162,7 @@ class TestFileStorage(unittest.TestCase):
         """... checks get method with class and id inputs"""
         duplicate = self.storage.get('User', self.user.id)
         expected = self.user.id
-        actual = duplicate.id
+        actual = duplicate.id if duplicate is not None else None
         self.assertEqual(expected, actual)
 
     def test_all(self):

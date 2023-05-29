@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Test BaseModel for expected behavior and documentation"""
-from datetime import datetime
+import datetime
 import inspect
 import models
 import pep8 as pycodestyle
@@ -66,8 +66,8 @@ class TestBaseModel(unittest.TestCase):
         inst.number = 89
         attrs_types = {
             "id": str,
-            "created_at": datetime,
-            "updated_at": datetime,
+            "created_at": datetime.datetime,
+            "updated_at": datetime.datetime,
             "name": str,
             "number": int
         }
@@ -82,15 +82,15 @@ class TestBaseModel(unittest.TestCase):
         """Test that two BaseModel instances have different datetime objects
         and that upon creation have identical updated_at and created_at
         value."""
-        tic = datetime.now()
         inst1 = BaseModel()
-        toc = datetime.now()
-        self.assertTrue(tic <= inst1.created_at <= toc)
-        time.sleep(1e-4)
-        tic = datetime.now()
         inst2 = BaseModel()
-        toc = datetime.now()
-        self.assertTrue(tic <= inst2.created_at <= toc)
+        tic = datetime.datetime.now()
+        time.sleep(1e-4)
+        toc = datetime.datetime.now()
+        self.assertLessEqual(tic, inst1.created_at)
+        self.assertGreaterEqual(inst1.created_at, toc)
+        self.assertLessEqual(tic, inst2.created_at)
+        self.assertGreaterEqual(inst2.created_at, toc)
         self.assertEqual(inst1.created_at, inst1.updated_at)
         self.assertEqual(inst2.created_at, inst2.updated_at)
         self.assertNotEqual(inst1.created_at, inst2.created_at)
