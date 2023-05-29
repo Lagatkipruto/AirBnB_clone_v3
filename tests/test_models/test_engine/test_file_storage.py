@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Contains the TestFileStorageDocs classes
+Contains the TestFileStorageDocs and TestFileStorage classes
 """
 
 from datetime import datetime
@@ -72,12 +72,6 @@ test_file_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
-class TestUserFsInstances:
-    """Class to setup instances for testing"""
-    user = User()
-    bm_obj = BaseModel()
-
-
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
@@ -133,16 +127,18 @@ class TestFileStorage(unittest.TestCase):
     def tearDownClass(cls):
         """tidies up the tests removing storage objects"""
         cls.storage.delete_all()
-        remove(F)
+        if os.path.exists(F):
+            os.remove(F)
 
     def setUp(self):
         """initializes new user for testing"""
-        self.user = TestUserFsInstances.user
-        self.bm_obj = TestUserFsInstances.bm_obj
+        self.user = User()
+        self.bm_obj = BaseModel()
 
     def test_storage_file_exists(self):
         """... checks proper FileStorage instantiation"""
-        remove(F)
+        if os.path.exists(F):
+            os.remove(F)
         self.user.save()
         self.assertTrue(isfile(F))
 
@@ -155,31 +151,32 @@ class TestFileStorage(unittest.TestCase):
     def test_count_all(self):
         """... checks the count method with no class input"""
         count_all = self.storage.count()
-        expected = 2
+        expected = 1
         self.assertEqual(expected, count_all)
 
     def test_get_cls_id(self):
         """... checks get method with class and id inputs"""
-        duplicate = self.storage.get('User', self.user.id)
-        expected = self.user.id
-        actual = duplicate.id if duplicate is not None else None
-        self.assertEqual(expected, actual)
+        user = User()
+        user_id = user.id
+        self.storage.new(user)
+        self.storage.save()
+        retrieved_user = self.storage.get(User.__name__, user_id)
+        self.assertEqual(user, retrieved_user)
 
     def test_all(self):
         """... checks if all() function returns newly created instance"""
-        u_id = self.user.id
+        user = User()
+        self.storage.new(user)
+        self.storage.save()
         all_obj = self.storage.all()
-        actual = False
-        for k in all_obj.keys():
-            if u_id in k:
-                actual = True
-        self.assertTrue(actual)
+        self.assertIn(user, all_obj.values())
 
     def test_obj_saved_to_file(self):
         """... checks proper FileStorage instantiation"""
-        remove(F)
-        self.user.save()
-        u_id = self.user.id
+        user = User()
+        self.storage.new(user)
+        self.storage.save()
+        u_id = user.id
         actual = False
         with open(F, mode='r', encoding='utf-8') as f_obj:
             storage_dict = json.load(f_obj)
@@ -190,7 +187,6 @@ class TestFileStorage(unittest.TestCase):
 
     def test_reload(self):
         """... checks proper usage of reload function"""
-        remove(F)
         self.bm_obj.save()
         u_id = self.bm_obj.id
         actual = False
