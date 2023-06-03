@@ -63,17 +63,17 @@ def handle_404(exception):
 @app.errorhandler(Exception)
 def global_error_handler(err):
     """
-    Global Route to handle All Error Status Codes
+        Global Route to handle All Error Status Codes
     """
     if isinstance(err, HTTPException):
         if type(err).__name__ == 'NotFound':
             err.description = "Not found"
-            message = {'error': err.description}
-            code = err.code
-        else:
-            message = {'error': err}
-            code = 500
-        return make_response(jsonify(message), code)
+        message = {'error': err.description}
+        code = err.code
+    else:
+        message = {'error': err}
+        code = 500
+    return make_response(jsonify(message), code)
 
 
 def setup_global_errors():
@@ -86,9 +86,9 @@ def setup_global_errors():
 
 if __name__ == "__main__":
     """
-    Main Flask App.
+    MAIN Flask App
     """
-    """ Initialize global error handling """
+    # initializes global error handling
     setup_global_errors()
-    """ Start Flask app"""
+    # start Flask app
     app.run(host=host, port=port)
